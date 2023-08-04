@@ -111,7 +111,7 @@ class TreeListHelpers {
     return this._getData().then((rows) => {
       this._generateColumns();
       this._exportRows(rows);
-      this._adjustColumnsWidth();
+      this._autoFitColumnsWidth();
     });
   }
 }
