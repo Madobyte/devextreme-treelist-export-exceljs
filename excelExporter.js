@@ -1,3 +1,7 @@
+const MIN_COLUMN_WIDTH = 10;
+const PIXELS_PER_INDENT = 10;
+const PIXELS_PER_EXCEL_WIDTH_UNIT = 8;
+
 class TreeListHelpers {
   constructor(component, worksheet, options) {
     this.component = component;
@@ -79,12 +83,26 @@ class TreeListHelpers {
     return row.items && row.items.length > 0;
   }
 
-  _adjustColumnsWidth() {
+  _autoFitColumnsWidth() {
     this.worksheet.columns.forEach((column) => {
-      const lengths = column.values.map((v) => v.toString().length);
-      const maxLength = Math.max(
-        ...lengths.filter((v) => typeof v === 'number')
-      );
+      let maxLength = MIN_COLUMN_WIDTH;
+      if (column.number === 1) {
+        // first column
+        column.eachCell((cell) => {
+          const indent =
+            cell.alignment &&
+            cell.alignment.indent *
+              (PIXELS_PER_INDENT / PIXELS_PER_EXCEL_WIDTH_UNIT);
+          const valueLength = cell.value.toString().length;
+
+          if (indent + valueLength > maxLength)
+            maxLength = indent + valueLength;
+        });
+      } else {
+        column.values.forEach((v) => {
+          if (v.toString().length > maxLength) maxLength = v.toString().length;
+        });
+      }
       column.width = maxLength;
     });
   }
