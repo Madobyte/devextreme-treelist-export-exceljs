@@ -7,7 +7,7 @@ class TreeListHelpers {
     this.rootValue = this.component.option('rootValue');
     this.parentIdExpr = this.component.option('parentIdExpr');
     this.keyExpr = this.component.option('keyExpr');
-    this.structure = this.parentIdExpr === undefined ? 'hierarchical' : 'plain';
+    this.dataStructure = this.component.option('dataStructure');
 
     this.data = this._getData();
 
@@ -24,7 +24,8 @@ class TreeListHelpers {
       .store()
       .load()
       .done((result) => (data = result));
-    if (this.structure === 'plain') data = this._convertToHierarchical(data);
+    if (this.dataStructure === 'plain')
+      data = this._convertToHierarchical(data);
     return this._depthDecorator(data);
   }
 
