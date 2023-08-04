@@ -6,7 +6,8 @@ class TreeListHelpers {
 
     this.rootValue = this.component.option('rootValue');
     this.parentIdExpr = this.component.option('parentIdExpr');
-    this.keyExpr = this.component.option('keyExpr');
+    this.keyExpr =
+      this.component.option('keyExpr') || this.component.getDataSource().key();
     this.dataStructure = this.component.option('dataStructure');
 
     this.worksheet.properties.outlineProperties = {
