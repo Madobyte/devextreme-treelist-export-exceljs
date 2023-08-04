@@ -102,4 +102,4 @@ function exportTreeList({ component, worksheet }) {
   });
 }
 
-export { exportTreeList };
+module.exports = { exportTreeList };
