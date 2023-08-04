@@ -105,3 +105,5 @@ function exportTreeList({ component, worksheet }) {
     });
   });
 }
+
+export { exportTreeList };
