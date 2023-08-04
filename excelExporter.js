@@ -9,8 +9,6 @@ class TreeListHelpers {
     this.keyExpr = this.component.option('keyExpr');
     this.dataStructure = this.component.option('dataStructure');
 
-    this.data = this._getData();
-
     this.worksheet.properties.outlineProperties = {
       summaryBelow: false,
       summaryRight: false,
@@ -18,15 +16,18 @@ class TreeListHelpers {
   }
 
   _getData() {
-    let data = [];
-    this.component
+    return this.component
       .getDataSource()
       .store()
       .load()
-      .done((result) => (data = result));
+      .then((result) => this._processData(result));
+  }
+
+  _processData(data) {
+    let rows = data;
     if (this.dataStructure === 'plain')
-      data = this._convertToHierarchical(data);
-    return this._depthDecorator(data);
+      rows = this._convertToHierarchical(rows);
+    return this._depthDecorator(rows);
   }
 
   // adds the depth for hierarchical data
@@ -88,18 +89,19 @@ class TreeListHelpers {
   }
 
   export() {
-    this._generateColumns();
-    this._exportRows(this.data);
-    this._adjustColumnsWidth();
+    return this._getData().then((rows) => {
+      this._generateColumns();
+      this._exportRows(rows);
+      this._adjustColumnsWidth();
+    });
   }
 }
 
 function exportTreeList({ component, worksheet }) {
   const helpers = new TreeListHelpers(component, worksheet);
   return new Promise((resolve, reject) => {
-    helpers.export();
-    resolve();
+    helpers.export().then(() => {
+      resolve();
+    });
   });
 }
-
-export { exportTreeList };
