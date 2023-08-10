@@ -108,10 +108,13 @@ class TreeListHelpers {
   }
 
   export() {
+    this.component.beginCustomLoading('Exporting to Excel...');
+
     return this._getData().then((rows) => {
       this._generateColumns();
       this._exportRows(rows);
       this._autoFitColumnsWidth();
+      this.component.endCustomLoading();
     });
   }
 }
