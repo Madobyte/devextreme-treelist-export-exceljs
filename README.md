@@ -2,10 +2,10 @@
 
 ### How to use
 1. Add the following import statement:
-> import { exportTreeList } from 'https://cdn.jsdelivr.net/gh/Madobyte/devextreme-treelist-export-exceljs/excelExporter.js';
-
-2. Define the export button in the TreeList's toolbar.
-3. Implement the button's onClick:
+> import { exportTreeList } from 'https://cdn.jsdelivr.net/gh/Madobyte/devextreme-treelist-export-exceljs@latest/excelExporter.js';
+2. Add the ExcelJS and FileSaver packages.
+3. Define the export button in the TreeList's toolbar.
+4. Implement the button's onClick:
 ```
 function exportToExcel() {
     const workbook = new ExcelJS.Workbook();
