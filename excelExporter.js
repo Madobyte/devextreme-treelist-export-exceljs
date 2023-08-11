@@ -37,23 +37,36 @@ class TreeListHelpers {
 
   // adds the depth for hierarchical data
   _depthDecorator(data, depth = 0) {
-    return data.map((node) =>
-      Object.assign(node, {
+    const result = [];
+
+    data.forEach((node) => {
+      result.push({
         ...node,
         depth,
         items: this._depthDecorator(node.items || [], depth + 1),
-      })
-    );
+      });
+    });
+
+    return result;
   }
 
   // converts plain to hierarchical
   _convertToHierarchical(data, id = this.rootValue) {
-    return data
-      .filter((node) => node[this.parentIdExpr] === id)
-      .map((node) => ({
+    const result = [];
+    const roots = [];
+
+    data.forEach((node) => {
+      if (node[this.parentIdExpr] === id) roots.push(node);
+    });
+
+    roots.forEach((node) => {
+      result.push({
         ...node,
         items: this._convertToHierarchical(data, node[this.keyExpr]),
-      }));
+      });
+    });
+
+    return result;
   }
 
   _exportRows(rows) {
