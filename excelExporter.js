@@ -102,10 +102,10 @@ class TreeListHelpers {
       if (column.number === 1) {
         // first column
         column.eachCell((cell) => {
-          const indent =
-            cell.alignment &&
-            cell.alignment.indent *
-              (PIXELS_PER_INDENT / PIXELS_PER_EXCEL_WIDTH_UNIT);
+          const indent = cell.alignment
+            ? cell.alignment.indent *
+              (PIXELS_PER_INDENT / PIXELS_PER_EXCEL_WIDTH_UNIT)
+            : 0;
           const valueLength = cell.value.toString().length;
 
           if (indent + valueLength > maxLength)
@@ -134,11 +134,7 @@ class TreeListHelpers {
 
 function exportTreeList({ component, worksheet }) {
   const helpers = new TreeListHelpers(component, worksheet);
-  return new Promise((resolve, reject) => {
-    helpers.export().then(() => {
-      resolve();
-    });
-  });
+  return helpers.export();
 }
 
 export { exportTreeList };
