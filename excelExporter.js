@@ -1,6 +1,7 @@
 const MIN_COLUMN_WIDTH = 10;
 const PIXELS_PER_INDENT = 10;
 const PIXELS_PER_EXCEL_WIDTH_UNIT = 8;
+const CELL_PADDING = 2;
 
 class TreeListHelpers {
   constructor(component, worksheet, options) {
@@ -18,6 +19,8 @@ class TreeListHelpers {
       summaryBelow: false,
       summaryRight: false,
     };
+
+    this.dateColumns = [];
   }
 
   _getData() {
@@ -78,6 +81,8 @@ class TreeListHelpers {
   }
 
   _exportRow(row) {
+    this._formatDates(row);
+
     const insertedRow = this.worksheet.addRow(row);
     insertedRow.outlineLevel = row.depth;
     this.worksheet.getCell(`A${insertedRow.number}`).alignment = {
@@ -85,11 +90,24 @@ class TreeListHelpers {
     };
   }
 
+  _formatDates(row) {
+    this.dateColumns.forEach((column) => {
+      row[column] = new Date(row[column]);
+    });
+  }
+
   _generateColumns() {
-    this.worksheet.columns = this.columns.map(({ caption, dataField }) => ({
-      header: caption,
-      key: dataField,
-    }));
+    this.worksheet.columns = this.columns.map(
+      ({ caption, dataField, dataType }) => {
+        if (dataType === 'date' || dataType === 'datetime')
+          this.dateColumns.push(dataField);
+
+        return {
+          header: caption,
+          key: dataField,
+        };
+      },
+    );
   }
 
   _hasChildren(row) {
@@ -113,10 +131,23 @@ class TreeListHelpers {
         });
       } else {
         column.values.forEach((v) => {
-          if (v.toString().length > maxLength) maxLength = v.toString().length;
+          // date column
+          if (
+            this.dateColumns.includes(column.key) &&
+            typeof v !== 'string' &&
+            v.toLocaleDateString().length > maxLength
+          )
+            maxLength = v.toLocaleDateString().length;
+
+          // other columns
+          if (
+            !this.dateColumns.includes(column.key) &&
+            v.toString().length > maxLength
+          )
+            maxLength = v.toString().length;
         });
       }
-      column.width = maxLength;
+      column.width = maxLength + CELL_PADDING;
     });
   }
 
