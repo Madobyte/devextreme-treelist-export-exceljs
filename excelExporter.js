@@ -8,6 +8,9 @@ class TreeListHelpers {
     this.component = component;
     this.worksheet = worksheet;
     this.columns = this.component.getVisibleColumns();
+    this.dateColumns = this.columns.filter(
+      (column) => column.dataType === 'date' || column.dataType === 'datetime',
+    );
 
     this.rootValue = this.component.option('rootValue');
     this.parentIdExpr = this.component.option('parentIdExpr');
@@ -19,8 +22,6 @@ class TreeListHelpers {
       summaryBelow: false,
       summaryRight: false,
     };
-
-    this.dateColumns = [];
   }
 
   _getData() {
@@ -97,17 +98,10 @@ class TreeListHelpers {
   }
 
   _generateColumns() {
-    this.worksheet.columns = this.columns.map(
-      ({ caption, dataField, dataType }) => {
-        if (dataType === 'date' || dataType === 'datetime')
-          this.dateColumns.push(dataField);
-
-        return {
-          header: caption,
-          key: dataField,
-        };
-      },
-    );
+    this.worksheet.columns = this.columns.map(({ caption, dataField }) => ({
+      header: caption,
+      key: dataField,
+    }));
   }
 
   _hasChildren(row) {
@@ -133,7 +127,9 @@ class TreeListHelpers {
         column.values.forEach((v) => {
           // date column
           if (
-            this.dateColumns.includes(column.key) &&
+            this.dateColumns.some(
+              (dateColumn) => dateColumn.dataField === column.key,
+            ) &&
             typeof v !== 'string' &&
             v.toLocaleDateString().length > maxLength
           )
@@ -141,7 +137,9 @@ class TreeListHelpers {
 
           // other columns
           if (
-            !this.dateColumns.includes(column.key) &&
+            !this.dateColumns.some(
+              (dateColumn) => dateColumn.dataField === column.key,
+            ) &&
             v.toString().length > maxLength
           )
             maxLength = v.toString().length;
