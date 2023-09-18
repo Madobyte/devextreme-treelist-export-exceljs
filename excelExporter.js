@@ -97,7 +97,7 @@ class TreeListHelpers {
 
   _formatDates(row) {
     this.dateColumns.forEach((column) => {
-      row[column] = new Date(row[column]);
+      row[column.dataField] = new Date(row[column.dataField]);
     });
   }
 
