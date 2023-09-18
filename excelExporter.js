@@ -11,6 +11,9 @@ class TreeListHelpers {
     this.dateColumns = this.columns.filter(
       (column) => column.dataType === 'date' || column.dataType === 'datetime',
     );
+    this.lookupColumns = this.columns.filter(
+      (column) => column.lookup !== undefined,
+    );
 
     this.rootValue = this.component.option('rootValue');
     this.parentIdExpr = this.component.option('parentIdExpr');
@@ -83,6 +86,7 @@ class TreeListHelpers {
 
   _exportRow(row) {
     this._formatDates(row);
+    this._assignLookupText(row);
 
     const insertedRow = this.worksheet.addRow(row);
     insertedRow.outlineLevel = row.depth;
@@ -94,6 +98,14 @@ class TreeListHelpers {
   _formatDates(row) {
     this.dateColumns.forEach((column) => {
       row[column] = new Date(row[column]);
+    });
+  }
+
+  _assignLookupText(row) {
+    this.lookupColumns.forEach((column) => {
+      row[column.dataField] = column.lookup.calculateCellValue(
+        row[column.dataField],
+      );
     });
   }
 
